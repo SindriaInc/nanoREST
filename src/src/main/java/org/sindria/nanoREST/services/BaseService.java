@@ -1,13 +1,14 @@
-package it.tennisclubarzachena.scoreboards;
+package org.sindria.nanoREST.services;
 
 import org.json.JSONObject;
+import org.sindria.nanoREST.Helper;
 
-public class Service {
+public class BaseService {
 
     /**
      * Service constructor
      */
-    public Service() {
+    public BaseService() {
         //
     }
 

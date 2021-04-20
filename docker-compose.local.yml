@@ -13,16 +13,16 @@ services:
     hostname: "${APP_NAME}.local"
     #ports:
     #  - "8080:80"
-    #networks:
-    #  default:
-    #    ipv4_address: "${APP_IP_ADDRESS}"
-    #    aliases:
-    #      - "${APP_NAME}.local"
     networks:
-      vpc_tca-ingress:
+      default:
         ipv4_address: "${APP_IP_ADDRESS}"
         aliases:
           - "${APP_NAME}.local"
+    #networks:
+    #  vpc_tca-ingress:
+    #    ipv4_address: "${APP_IP_ADDRESS}"
+    #    aliases:
+    #      - "${APP_NAME}.local"
 
   # =db
 #  db:

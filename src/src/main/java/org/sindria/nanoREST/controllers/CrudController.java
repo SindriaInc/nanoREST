@@ -1,23 +1,24 @@
-package it.tennisclubarzachena.scoreboards;
+package org.sindria.nanoREST.controllers;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.router.RouterNanoHTTPD;
 import org.json.JSONObject;
+import org.sindria.nanoREST.models.BaseModel;
+import org.sindria.nanoREST.services.BaseService;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class CrudController extends BaseController {
 
     /**
-     * Model
+     * BaseModel
      */
-    public Model model;
+    public BaseModel model;
 
     /**
      * Service
      */
-    public Service service;
+    public BaseService service;
 
 
     /**
@@ -25,8 +26,8 @@ public class CrudController extends BaseController {
      */
     public CrudController() {
         super();
-        this.service = new Service();
-        this.model = new Model();
+        this.service = new BaseService();
+        this.model = new BaseModel();
     }
 
 

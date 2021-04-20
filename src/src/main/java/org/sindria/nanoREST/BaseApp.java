@@ -1,10 +1,11 @@
-package it.tennisclubarzachena.scoreboards;
+package org.sindria.nanoREST;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.router.RouterNanoHTTPD;
+import org.sindria.nanoREST.controllers.Controller;
 
 // NOTE: If you're using NanoHTTPD >= 3.0.0 the namespace is different,
 //       instead of the above import use the following:

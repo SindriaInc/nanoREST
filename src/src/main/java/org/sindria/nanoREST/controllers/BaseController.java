@@ -1,8 +1,9 @@
-package it.tennisclubarzachena.scoreboards;
+package org.sindria.nanoREST.controllers;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.router.RouterNanoHTTPD;
 import org.json.JSONObject;
+import org.sindria.nanoREST.BaseApp;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -73,7 +74,6 @@ public abstract class BaseController extends RouterNanoHTTPD.GeneralHandler {
         assert result != null;
         return NanoHTTPD.newFixedLengthResponse(getStatus(), getMimeType(), result.toString());
     }
-
 
     /**
      * Call controller action
