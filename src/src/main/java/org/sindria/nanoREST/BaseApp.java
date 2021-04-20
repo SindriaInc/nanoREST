@@ -67,16 +67,4 @@ public abstract class BaseApp extends RouterNanoHTTPD {
         routes.put("test", "test");
         return routes;
     }
-
-    /**
-     * Main application server
-     */
-    public static void main(String[] args) {
-        try {
-            new App();
-        } catch (IOException ioe) {
-            System.err.println("Couldn't start server:\n" + ioe);
-        }
-    }
-
 }

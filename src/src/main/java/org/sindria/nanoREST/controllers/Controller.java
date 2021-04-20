@@ -10,13 +10,13 @@ import fi.iki.elonen.router.RouterNanoHTTPD;
 import java.util.Map;
 import org.json.JSONObject;
 
-public class Controller extends BaseController {
+public class Controller extends BaseController<Controller> {
 
     /**
      * Controller constructor
      */
     public Controller() {
-        super();
+        super(Controller.class);
     }
 
     public JSONObject test(RouterNanoHTTPD.UriResource uriResource, Map<String, String> urlParams, NanoHTTPD.IHTTPSession session) {

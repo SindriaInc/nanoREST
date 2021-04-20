@@ -12,22 +12,12 @@ import java.util.Map;
 //       instead of the above import use the following:
 // import org.nanohttpd.NanoHTTPD;
 
-public abstract class BaseController extends RouterNanoHTTPD.GeneralHandler {
+public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
 
     /**
      * Controller sigleton
      */
-    private static Controller INSTANCE;
-
-    /**
-     * Controller instance
-     */
-    public static Controller getInstance() {
-        if(INSTANCE == null) {
-            INSTANCE = new Controller();
-        }
-        return INSTANCE;
-    }
+    private T INSTANCE;
 
     /**
      * apiVersion
@@ -47,10 +37,16 @@ public abstract class BaseController extends RouterNanoHTTPD.GeneralHandler {
     /**
      * BaseController constructor
      */
-    public BaseController() {
+    public BaseController(Class<T> typeController) {
         this.apiVersion = BaseApp.apiVersion;
         this.serviceName = BaseApp.serviceName;
         this.reservedUri = "api/" + apiVersion + "/" + serviceName;
+
+        try {
+            this.INSTANCE = typeController.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -88,9 +84,8 @@ public abstract class BaseController extends RouterNanoHTTPD.GeneralHandler {
 
         String methodMatched = this.matchUriMethod(currentUri);
 
-        var controller = BaseController.getInstance();
-        var methodCall = controller.getClass().getMethod(methodMatched, RouterNanoHTTPD.UriResource.class, Map.class, NanoHTTPD.IHTTPSession.class);
-        return (JSONObject) methodCall.invoke(controller, uriResource, urlParams, session);
+        var methodCall = INSTANCE.getClass().getMethod(methodMatched, RouterNanoHTTPD.UriResource.class, Map.class, NanoHTTPD.IHTTPSession.class);
+        return (JSONObject) methodCall.invoke(INSTANCE, uriResource, urlParams, session);
     }
 
     /**
