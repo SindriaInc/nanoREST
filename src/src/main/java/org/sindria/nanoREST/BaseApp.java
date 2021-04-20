@@ -28,12 +28,10 @@ public abstract class BaseApp extends RouterNanoHTTPD {
      */
     public static HashMap<String, String> appRoutes;
 
-
     /**
      * UriRouter
      */
     private final UriRouter router;
-
 
     /**
      * BaseApp constructor
@@ -69,7 +67,6 @@ public abstract class BaseApp extends RouterNanoHTTPD {
         routes.put("test", "test");
         return routes;
     }
-
 
     /**
      * Main application server
