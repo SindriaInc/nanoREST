@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.sindria.nanoREST.BaseApp;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 // NOTE: If you're using NanoHTTPD >= 3.0.0 the namespace is different,
@@ -15,9 +16,9 @@ import java.util.Map;
 public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
 
     /**
-     * Controller sigleton
+     * Controller Class
      */
-    private T INSTANCE;
+    protected Class<T> controller;
 
     /**
      * apiVersion
@@ -38,15 +39,10 @@ public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
      * BaseController constructor
      */
     public BaseController(Class<T> typeController) {
+        this.controller = typeController;
         this.apiVersion = BaseApp.apiVersion;
         this.serviceName = BaseApp.serviceName;
         this.reservedUri = "api/" + apiVersion + "/" + serviceName;
-
-        try {
-            this.INSTANCE = typeController.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -84,8 +80,30 @@ public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
 
         String methodMatched = this.matchUriMethod(currentUri);
 
-        var methodCall = INSTANCE.getClass().getMethod(methodMatched, RouterNanoHTTPD.UriResource.class, Map.class, NanoHTTPD.IHTTPSession.class);
-        return (JSONObject) methodCall.invoke(INSTANCE, uriResource, urlParams, session);
+        if (methodMatched == null) {
+            return new JSONObject("{\"resource\":{\"message\":\"This method is not implemented yet\"}}");
+        }
+
+
+        try {
+            String controllerName = this.controller.getSimpleName();
+
+            if (controllerName.equals("Controller")) {
+                Method getInstance = this.controller.getDeclaredMethod("getInstance");
+                Object instance = getInstance.invoke(null);
+                Method methodCall = instance.getClass().getMethod(methodMatched, RouterNanoHTTPD.UriResource.class, Map.class, NanoHTTPD.IHTTPSession.class);
+                return (JSONObject) methodCall.invoke(instance, uriResource, urlParams, session);
+            }
+            return new JSONObject("{\"resource\":{\"message\":\"Controller class unsupported, sorry\"}}");
+        } catch(Exception e) {
+            // Print the wrapper exception:
+            System.out.println("Wrapper exception: " + e);
+
+            // Print the 'actual' exception:
+            System.out.println("Underlying exception: " + e.getCause());
+        }
+
+        return new JSONObject("{\"resource\":{\"message\":\"Fatal error during callControllerAction() in BaseController\"}}");
     }
 
     /**
