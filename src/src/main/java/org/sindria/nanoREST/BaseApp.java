@@ -1,12 +1,11 @@
 package org.sindria.nanoREST;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.router.RouterNanoHTTPD;
-import org.sindria.nanoREST.controllers.BaseController;
+import org.sindria.nanoREST.handlers.*;
 
 // NOTE: If you're using NanoHTTPD >= 3.0.0 the namespace is different,
 //       instead of the above import use the following:
@@ -37,7 +36,7 @@ public abstract class BaseApp<T> extends RouterNanoHTTPD {
     /**
      * UriRouter
      */
-    //private final UriRouter router;
+    private final RouterNanoHTTPD.UriRouter router = new RouterNanoHTTPD.UriRouter();
 
     /**
      * BaseApp constructor
@@ -45,19 +44,9 @@ public abstract class BaseApp<T> extends RouterNanoHTTPD {
     public BaseApp(Class<T> typeController, String apiVersion, String serviceName) throws IOException {
         super(80);
         this.controller = typeController;
-        //this.controller = (T) typeController;
-
-//        try {
-//            this.app = typeApp.getDeclaredConstructor().newInstance();
-//        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-//            e.printStackTrace();
-//        }
-
-
         BaseApp.apiVersion = apiVersion;
         BaseApp.serviceName = serviceName;
         BaseApp.appRoutes = this.appRoutes();
-        //router = new UriRouter();
         addMappings();
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
         System.out.println("\nRunning! Point your browsers to http://localhost:80/ \n");
@@ -68,8 +57,10 @@ public abstract class BaseApp<T> extends RouterNanoHTTPD {
      */
     @Override
     public void addMappings() {
-        //router.setNotImplemented(NotImplementedHandler.class);
-        //router.setNotFoundHandler(Error404UriHandler.class);
+        router.setNotImplemented(NotImplementedHandler.class);
+        router.setNotFoundHandler(Error404UriHandler.class);
+        addRoute("/", nanoRESTIndexHandler.class);
+        addRoute("/index.html", nanoRESTIndexHandler.class);
 
         addRoute("/api/"+ BaseApp.apiVersion+"/"+ BaseApp.serviceName, this.controller);
 
@@ -86,16 +77,4 @@ public abstract class BaseApp<T> extends RouterNanoHTTPD {
         routes.put("test", "test");
         return routes;
     }
-
-//    /**
-//     * Main application server
-//     */
-//    public void main(String[] args) {
-//        try {
-//            new this.app;
-//        } catch (IOException ioe) {
-//            System.err.println("Couldn't start server:\n" + ioe);
-//        }
-//    }
-
 }
