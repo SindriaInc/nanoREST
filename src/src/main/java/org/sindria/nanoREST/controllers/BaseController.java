@@ -56,14 +56,14 @@ public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
     @Override
     public NanoHTTPD.Response get(RouterNanoHTTPD.UriResource uriResource, Map<String, String> urlParams, NanoHTTPD.IHTTPSession session) {
 
-        Object result = null;
+        JSONObject result = new JSONObject("{\"resource\":{\"message\":\"Fatal error in wrapper call to action\"}}");
         try {
             result = this.callControllerAction(uriResource, urlParams, session);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
+            new JSONObject("{\"resource\":{\"message\":\"Fatal error in wrapper call to action\", \"error\":\""+e+"\"}}");
         }
 
-        assert result != null;
         return NanoHTTPD.newFixedLengthResponse(getStatus(), getMimeType(), result.toString());
     }
 
@@ -98,9 +98,8 @@ public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
         } catch(Exception e) {
             System.out.println("Wrapper exception: " + e);
             System.out.println("Underlying exception: " + e.getCause());
+            return new JSONObject("{\"resource\":{\"message\":\"Fatal error during callControllerAction() in BaseController\", \"error\":\""+e+"\", \"cause\":\""+e.getCause()+"\"}}");
         }
-
-        return new JSONObject("{\"resource\":{\"message\":\"Fatal error during callControllerAction() in BaseController\"}}");
     }
 
     /**
