@@ -61,7 +61,7 @@ public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
             result = this.callControllerAction(uriResource, urlParams, session);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
-            new JSONObject("{\"resource\":{\"message\":\"Fatal error in wrapper call to action\", \"error\":\""+e+"\"}}");
+            result = new JSONObject("{\"resource\":{\"message\":\"Fatal error in wrapper call to action\", \"error\":\""+e+"\"}}");
         }
 
         return NanoHTTPD.newFixedLengthResponse(getStatus(), getMimeType(), result.toString());
