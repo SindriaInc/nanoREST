@@ -56,7 +56,7 @@ public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
     @Override
     public NanoHTTPD.Response get(RouterNanoHTTPD.UriResource uriResource, Map<String, String> urlParams, NanoHTTPD.IHTTPSession session) {
 
-        JSONObject result = new JSONObject("{\"resource\":{\"message\":\"Fatal error in wrapper call to action\"}}");
+        JSONObject result;
         try {
             result = this.callControllerAction(uriResource, urlParams, session);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
