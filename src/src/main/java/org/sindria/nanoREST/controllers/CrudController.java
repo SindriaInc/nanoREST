@@ -8,7 +8,7 @@ import org.sindria.nanoREST.services.BaseService;
 
 import java.util.Map;
 
-public class CrudController extends BaseController<CrudController> {
+public class CrudController<T> extends BaseController<CrudController> {
 
     /**
      * BaseModel
@@ -24,7 +24,7 @@ public class CrudController extends BaseController<CrudController> {
     /**
      * CrudController constructor
      */
-    public CrudController() {
+    public CrudController(Class<T> typeController) {
         super(CrudController.class);
         this.service = new BaseService();
         this.model = new BaseModel();

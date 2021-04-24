@@ -96,10 +96,7 @@ public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
             }
             return new JSONObject("{\"resource\":{\"message\":\"Controller class unsupported, sorry\"}}");
         } catch(Exception e) {
-            // Print the wrapper exception:
             System.out.println("Wrapper exception: " + e);
-
-            // Print the 'actual' exception:
             System.out.println("Underlying exception: " + e.getCause());
         }
 
