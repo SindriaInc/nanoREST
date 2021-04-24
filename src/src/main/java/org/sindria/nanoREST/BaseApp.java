@@ -12,10 +12,12 @@ import org.sindria.nanoREST.controllers.BaseController;
 //       instead of the above import use the following:
 // import org.nanohttpd.NanoHTTPD;
 
-public abstract class BaseApp extends RouterNanoHTTPD {
+public abstract class BaseApp<T> extends RouterNanoHTTPD {
 
-    //protected T controller;
-    //public T app;
+    /**
+     * Controller Class
+     */
+    protected Class<T> controller;
 
     /**
      * apiVersion
@@ -40,8 +42,9 @@ public abstract class BaseApp extends RouterNanoHTTPD {
     /**
      * BaseApp constructor
      */
-    public BaseApp(String apiVersion, String serviceName) throws IOException {
+    public BaseApp(Class<T> typeController, String apiVersion, String serviceName) throws IOException {
         super(80);
+        this.controller = typeController;
         //this.controller = (T) typeController;
 
 //        try {
@@ -68,10 +71,10 @@ public abstract class BaseApp extends RouterNanoHTTPD {
         //router.setNotImplemented(NotImplementedHandler.class);
         //router.setNotFoundHandler(Error404UriHandler.class);
 
-        //addRoute("/api/"+ BaseApp.apiVersion+"/"+ BaseApp.serviceName, Controller.class);
+        addRoute("/api/"+ BaseApp.apiVersion+"/"+ BaseApp.serviceName, this.controller);
 
         for (String key : BaseApp.appRoutes.keySet()) {
-            //addRoute("/api/"+ BaseApp.apiVersion+"/"+ BaseApp.serviceName+"/"+key, Controller.class);
+            addRoute("/api/"+ BaseApp.apiVersion+"/"+ BaseApp.serviceName+"/"+key, this.controller);
         }
     }
 
