@@ -36,9 +36,7 @@ public abstract class BaseRequest {
 
 
     private final RouterNanoHTTPD.UriResource uriResourceHTTPD;
-
     private final Map<String, String> urlParamsHTTPD;
-
     private final NanoHTTPD.IHTTPSession sessionHTTPD;
 
     public String request;
@@ -68,6 +66,8 @@ public abstract class BaseRequest {
     protected String locale;
 
     protected String defaultLocale = "en";
+
+    protected static Map<String, String[]> formats;
 
 
     private final Boolean isHostValid = true;
@@ -126,25 +126,25 @@ public abstract class BaseRequest {
     }
 
 
-//    /**
-//     * Initializes HTTP request formats.
-//     */
-//    protected static function initializeFormats()
-//    {
-//        static::$formats = [
-//        'html' => ['text/html', 'application/xhtml+xml'],
-//        'txt' => ['text/plain'],
-//        'js' => ['application/javascript', 'application/x-javascript', 'text/javascript'],
-//        'css' => ['text/css'],
-//        'json' => ['application/json', 'application/x-json'],
-//        'jsonld' => ['application/ld+json'],
-//        'xml' => ['text/xml', 'application/xml', 'application/x-xml'],
-//        'rdf' => ['application/rdf+xml'],
-//        'atom' => ['application/atom+xml'],
-//        'rss' => ['application/rss+xml'],
-//        'form' => ['application/x-www-form-urlencoded'],
-//        ];
-//    }
+    /**
+     * Initializes HTTP request formats.
+     */
+    protected static void initializeFormats()
+    {
+        BaseRequest.formats = new HashMap<>();
+        BaseRequest.formats.put("html", new String[] {"text/html","application/xhtml+xml"});
+        BaseRequest.formats.put("txt", new String[] {"text/plain"});
+        BaseRequest.formats.put("js", new String[] {"application/javascript", "application/x-javascript", "text/javascript"});
+        BaseRequest.formats.put("css", new String[] {"text/css"});
+        BaseRequest.formats.put("json", new String[] {"application/json", "application/x-json"});
+        BaseRequest.formats.put("jsonld", new String[] {"application/ld+json"});
+        BaseRequest.formats.put("xml", new String[] {"text/xml", "application/xml", "application/x-xml"});
+        BaseRequest.formats.put("rdf", new String[] {"application/rdf+xml"});
+        BaseRequest.formats.put("atom", new String[] {"application/atom+xml"});
+        BaseRequest.formats.put("rss", new String[] {"application/rss+xml"});
+        BaseRequest.formats.put("form", new String[] {"application/x-www-form-urlencoded"});
+
+    }
 
 
     public NanoHTTPD.Method getMethod() {
@@ -180,8 +180,8 @@ public abstract class BaseRequest {
      * true if the request came from a trusted proxy, false otherwise
      */
     public Boolean isFromTrustedProxy() {
-        return false;
         // TODO: implement
+        return false;
     }
 
     /**
@@ -193,11 +193,16 @@ public abstract class BaseRequest {
      * The "X-Forwarded-Proto" header must contain the protocol: "https" or "http".
      */
     public boolean isSecure() {
-        return false;
         // TODO: implement
+        return false;
+    }
 
 
-
+    /**
+     * Gets the request's scheme.
+     */
+    public String getScheme() {
+        return this.isSecure() ? "https" : "http";
     }
 
     /**
@@ -216,14 +221,55 @@ public abstract class BaseRequest {
 
 
     /**
+     * Returns the client IP address.
+     *
+     * @see "https://wikipedia.org/wiki/X-Forwarded-For"
+     */
+    public String getClientIp() {
+        return this.headers.get("http-client-ip");
+    }
+
+    /**
+     * Returns the port on which the request is made.
+     */
+    public Integer getPort() {
+        // TODO: implement
+        return 80;
+    }
+
+    /**
+     * Returns the host name.
+     */
+    public String getHost() {
+        return this.headers.get("host");
+    }
+
+    /**
+     * Returns the HTTP host being requested.
+     *
+     * The port name will be appended to the host if it's non-standard.
+     */
+    public String getHttpHost() {
+        String scheme = this.getScheme();
+        Integer port = this.getPort();
+
+        if ((scheme.equals("http") && 80 == port) || (scheme.equals("https") && 443 == port)) {
+            return this.getHost();
+        }
+
+        return this.getHost()+":"+port;
+    }
+
+
+    /**
      * Normalizes a query string.
      *
      * It builds a normalized query string, where keys/value pairs are alphabetized,
      * have consistent escaping and unneeded delimiters are removed.
      */
     public static String normalizeQueryString() {
-        return "";
         // TODO: implement
+        return "";
     }
 
     /**
@@ -235,33 +281,66 @@ public abstract class BaseRequest {
      * @see "https://wikipedia.org/wiki/List_of_Ajax_frameworks#JavaScript"
      */
     public Boolean isXmlHttpRequest() {
-        return false;
         // TODO: implement
+        return false;
     }
 
     /**
      * Gets the mime type associated with the format.
+     *
+     * The associated mime type (null if not found)
      */
-    public String getMimeType() {
-        return "";
-        // TODO: implement
+    public String getMimeType(String format) {
+
+        String mime = null;
+
+        if (BaseRequest.formats == null) {
+            BaseRequest.initializeFormats();
+        }
+
+        for (String f : BaseRequest.formats.keySet()) {
+            if (format.equals(f)) {
+                mime = BaseRequest.formats.get(f)[0];
+            }
+        }
+
+        return mime;
+    }
+
+    /**
+     * Gets the mime types associated with the format.
+     *
+     * The associated mime types
+     */
+    public String[] getMimeTypes(String format) {
+        String[] mime = null;
+
+        if (BaseRequest.formats == null) {
+            BaseRequest.initializeFormats();
+        }
+
+        for (String f : BaseRequest.formats.keySet()) {
+            if (format.equals(f)) {
+                mime = BaseRequest.formats.get(f);
+            }
+        }
+
+        return mime;
     }
 
     /**
      * Gets the format associated with the request.
      */
     public String getContentType() {
-       return "";
-        // TODO: implement
+        return this.headers.get("content-type");
     }
-
 
     /**
      * Checks if the request method is of specified type.
      */
     public Boolean isMethod(String method) {
-        return true;
         // TODO: implement
+        return true;
     }
 
     /**
@@ -271,16 +350,16 @@ public abstract class BaseRequest {
      * @see "https://tools.ietf.org/html/rfc7231#section-4.2.3"
      */
     public Boolean isMethodCacheable() {
-        return false;
         // TODO: implement
+        return false;
     }
 
     /**
      * Returns the protocol version.
      */
     public String getProtocolVersion() {
-        return "";
         // TODO: implement
+        return "";
     }
 
 
@@ -288,8 +367,8 @@ public abstract class BaseRequest {
      * Returns the request body content.
      */
     public String getContent() {
-        return "";
         // TODO: implement
+        return "";
     }
 
     /**
@@ -299,8 +378,7 @@ public abstract class BaseRequest {
         if (this.languages != null) {
             return this.languages;
         }
-        // TODO: implement
-        return null;
+        return this.headers.get("accept-language");
     }
 
     /**
