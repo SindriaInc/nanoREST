@@ -4,6 +4,7 @@ import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.router.RouterNanoHTTPD;
 import org.json.JSONObject;
 import org.sindria.nanoREST.BaseApp;
+import org.sindria.nanoREST.requests.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -91,8 +92,11 @@ public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
             if (controllerName.equals("Controller")) {
                 Method getInstance = this.controller.getDeclaredMethod("getInstance");
                 Object instance = getInstance.invoke(null);
-                Method methodCall = instance.getClass().getMethod(methodMatched, RouterNanoHTTPD.UriResource.class, Map.class, NanoHTTPD.IHTTPSession.class);
-                return (JSONObject) methodCall.invoke(instance, uriResource, urlParams, session);
+
+                var request = new Request(uriResource,  urlParams, session);
+
+                Method methodCall = instance.getClass().getMethod(methodMatched, Request.class);
+                return (JSONObject) methodCall.invoke(instance, request);
             }
             return new JSONObject("{\"resource\":{\"message\":\"Controller class unsupported, sorry\"}}");
         } catch(Exception e) {
