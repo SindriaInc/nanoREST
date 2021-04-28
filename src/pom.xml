@@ -5,7 +5,7 @@
     <groupId>org.sindria</groupId>
     <artifactId>nanoREST</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 
     <properties>
         <maven.compiler.source>14</maven.compiler.source>

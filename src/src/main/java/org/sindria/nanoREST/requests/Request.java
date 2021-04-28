@@ -29,14 +29,14 @@ public class Request extends BaseRequest {
      * Get the client user agent.
      */
     public String userAgent() {
-        return "";
+        return this.getUserAgent();
     }
 
     /**
      * Get the client IP address.
      */
     public String ip() {
-        return "";
+        return this.getClientIp();
     }
 
     /**

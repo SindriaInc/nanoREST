@@ -143,7 +143,6 @@ public abstract class BaseRequest {
         BaseRequest.formats.put("atom", new String[] {"application/atom+xml"});
         BaseRequest.formats.put("rss", new String[] {"application/rss+xml"});
         BaseRequest.formats.put("form", new String[] {"application/x-www-form-urlencoded"});
-
     }
 
 
@@ -165,7 +164,6 @@ public abstract class BaseRequest {
      * You should only list the reverse proxies that you manage directly.
      */
     public static void setTrustedProxies(String[] proxies, Integer trustedHeaderSet) {
-
         int i = 0;
         for (String proxy: proxies) {
             BaseRequest.trustedProxies[i] = proxy;
@@ -333,6 +331,13 @@ public abstract class BaseRequest {
      */
     public String getContentType() {
         return this.headers.get("content-type");
+    }
+
+    /**
+     * Gets the user agent associated with the request.
+     */
+    public String getUserAgent() {
+        return this.headers.get("user-agent");
     }
 
     /**
