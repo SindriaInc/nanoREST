@@ -2,13 +2,23 @@ package org.sindria.nanoREST.requests;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.router.RouterNanoHTTPD;
+import org.sindria.nanoREST.requests.validators.Validator;
 
 import java.util.Map;
 
 public class Request extends BaseRequest {
 
+    /**
+     * Validator singleton instance
+     */
+    public Validator validator;
+
+    /**
+     * Request constructor
+     */
     public Request(RouterNanoHTTPD.UriResource uriResource, Map<String, String> urlParams, NanoHTTPD.IHTTPSession session) {
         super(uriResource, urlParams, session);
+        this.validator = Validator.getInstance();
     }
 
     /**
