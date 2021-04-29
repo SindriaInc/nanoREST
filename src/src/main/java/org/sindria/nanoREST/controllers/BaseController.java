@@ -4,6 +4,7 @@ import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.router.RouterNanoHTTPD;
 import org.json.JSONObject;
 import org.sindria.nanoREST.BaseApp;
+import org.sindria.nanoREST.requests.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -91,8 +92,11 @@ public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
             if (controllerName.equals("Controller")) {
                 Method getInstance = this.controller.getDeclaredMethod("getInstance");
                 Object instance = getInstance.invoke(null);
-                Method methodCall = instance.getClass().getMethod(methodMatched, RouterNanoHTTPD.UriResource.class, Map.class, NanoHTTPD.IHTTPSession.class);
-                return (JSONObject) methodCall.invoke(instance, uriResource, urlParams, session);
+
+                var request = new Request(uriResource,  urlParams, session);
+
+                Method methodCall = instance.getClass().getMethod(methodMatched, Request.class);
+                return (JSONObject) methodCall.invoke(instance, request);
             }
             return new JSONObject("{\"resource\":{\"message\":\"Controller class unsupported, sorry\"}}");
         } catch(Exception e) {
@@ -113,7 +117,16 @@ public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
             String uriPath = this.reservedUri + "/" + key;
 
             if (currentUri.equals(uriPath)) {
-                methodName = BaseApp.appRoutes.get(key);
+
+                String checkMethod = BaseApp.appRoutes.get(key);
+
+                if (checkMethod.contains("Controller::")) {
+                    methodName = checkMethod.replace("Controller::", "");
+                } else if (checkMethod.contains("this.controller::")) {
+                    methodName = checkMethod.replace("this.controller::", "");
+                } else {
+                    methodName = BaseApp.appRoutes.get(key);
+                }
             }
         }
         return methodName;

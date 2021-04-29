@@ -1,14 +1,8 @@
 package org.sindria.nanoREST.controllers;
 
-import fi.iki.elonen.NanoHTTPD;
-import fi.iki.elonen.router.RouterNanoHTTPD;
-
-// NOTE: If you're using NanoHTTPD >= 3.0.0 the namespace is different,
-//       instead of the above import use the following:
-// import org.nanohttpd.NanoHTTPD;
-
 import java.util.Map;
 import org.json.JSONObject;
+import org.sindria.nanoREST.requests.Request;
 
 public class TestController<T> extends BaseController<TestController> {
 
@@ -19,7 +13,7 @@ public class TestController<T> extends BaseController<TestController> {
         super((Class<TestController>) typeController);
     }
 
-    public JSONObject test(RouterNanoHTTPD.UriResource uriResource, Map<String, String> urlParams, NanoHTTPD.IHTTPSession session) {
+    public JSONObject test(Request request) {
         return new JSONObject("{\"test\": [] }");
     }
 }
