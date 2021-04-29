@@ -73,8 +73,8 @@ public abstract class BaseApp<T> extends RouterNanoHTTPD {
      * Default App routes
      */
     public HashMap<String, String> appRoutes() {
-        HashMap<String, String> routes = new HashMap<String, String>();
-        routes.put("test", "test");
+        HashMap<String, String> routes = new HashMap<>();
+        routes.put("test", "this.controller::test");
         return routes;
     }
 }

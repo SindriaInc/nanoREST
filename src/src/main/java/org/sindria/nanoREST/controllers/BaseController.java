@@ -117,7 +117,16 @@ public abstract class BaseController<T> extends RouterNanoHTTPD.GeneralHandler {
             String uriPath = this.reservedUri + "/" + key;
 
             if (currentUri.equals(uriPath)) {
-                methodName = BaseApp.appRoutes.get(key);
+
+                String checkMethod = BaseApp.appRoutes.get(key);
+
+                if (checkMethod.contains("Controller::")) {
+                    methodName = checkMethod.replace("Controller::", "");
+                } else if (checkMethod.contains("this.controller::")) {
+                    methodName = checkMethod.replace("this.controller::", "");
+                } else {
+                    methodName = BaseApp.appRoutes.get(key);
+                }
             }
         }
         return methodName;
